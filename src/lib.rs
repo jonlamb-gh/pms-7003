@@ -15,7 +15,7 @@ type Response = [u8; RESPONSE_FRAME_SIZE];
 
 pub const MN1: u8 = 0x42;
 pub const MN2: u8 = 0x4D;
-const PASSIVE_MODE_RESPONSE: Response = [MN1, MN1, 0x00, 0x04, 0xE1, 0x00, 0x01, 0x74];
+const PASSIVE_MODE_RESPONSE: Response = [MN1, MN2, 0x00, 0x04, 0xE1, 0x00, 0x01, 0x74];
 const ACTIVE_MODE_RESPONSE: Response = [MN1, MN2, 0x00, 0x04, 0xE1, 0x01, 0x01, 0x75];
 const SLEEP_RESPONSE: Response = [MN1, MN2, 0x00, 0x04, 0xE4, 0x00, 0x01, 0x77];
 
@@ -55,7 +55,7 @@ where
     fn read_from_device<T: AsMut<[u8]>>(&mut self, mut buffer: T) -> Result<T, Error> {
         use read_fsm::*;
 
-        let mut read = ReadStateMachine::new(buffer.as_mut(), 10);
+        let mut read = ReadStateMachine::new(buffer.as_mut(), usize::MAX);
         loop {
             match read.update(self.serial.read()) {
                 ReadStatus::Failed => return Err(Error::ReadFailed),
